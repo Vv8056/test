@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyApp — APK Download</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0f1724; color: #e6eef6; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: auto; background: #0b1220; padding: 20px; border-radius: 16px; }
+    h1 { margin-top: 0; }
+    .stat { margin: 8px 0; }
+    button { padding: 12px 20px; border: none; border-radius: 12px; cursor: pointer; background: #06b6d4; color: #031023; font-weight: bold; }
+    button:hover { background: #05a1c0; }
+    .progress { width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-top: 10px; }
+    .bar { height: 100%; width: 0%; background: linear-gradient(90deg,#00f5a0,#06b6d4); transition: width 0.2s; }
+    .hash { font-family: monospace; word-break: break-all; color: #c7f9ff; }
+    .muted { color: #9aa7b2; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MyApp — APK Download</h1>
+    <p class="muted">Fetches the latest release automatically from GitHub.</p>
+
+    <div class="stat"><strong>Name:</strong> <span id="name">Loading…</span></div>
+    <div class="stat"><strong>Version:</strong> <span id="version">—</span></div>
+    <div class="stat"><strong>Size:</strong> <span id="size">—</span></div>
+    <div class="stat"><strong>SHA-256:</strong> <span id="sha">—</span></div>
+
+    <button id="downloadBtn">Download APK</button>
+
+    <div class="progress" aria-hidden>
+      <div class="bar" id="progressBar"></div>
+    </div>
+
+    <p class="muted">If download doesn’t start, <a id="directLink" href="#">click here</a>.</p>
+  </div>
+
+  <script>
+    const el = id => document.getElementById(id);
+
+    let APK_URL = null;
+
+    async function fetchRelease() {
+      try {
+        const res = await fetch('/api/release');
+        const data = await res.json();
+
+        if (res.ok) {
+          el('name').textContent = data.name;
+          el('version').textContent = data.version;
+          el('size').textContent = formatBytes(data.size);
+          el('sha').textContent = data.sha || '(not provided)';
+          el('directLink').href = data.url;
+          APK_URL = data.url;
+        } else {
+          el('name').textContent = 'Error';
+          el('version').textContent = data.error;
+        }
+      } catch (err) {
+        console.error(err);
+        el('name').textContent = 'Failed to load';
+      }
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return '—';
+      const units = ['B','KB','MB','GB'];
+      let u = 0;
+      while (bytes >= 1024 && u < units.length - 1) { bytes /= 1024; u++; }
+      return bytes.toFixed(1) + ' ' + units[u];
+    }
+
+    async function downloadAPK() {
+      if (!APK_URL) return window.alert('APK URL not loaded');
+
+      // Android-style direct download
+      const a = document.createElement('a');
+      a.href = APK_URL;
+      a.download = 'MyApp-latest.apk';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    el('downloadBtn').addEventListener('click', downloadAPK);
+
+    fetchRelease();
+  </script>
+</body>
+</html>

@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({
-      release, asset 
+      releases
       // name: release.name || release.tag_name,
       // version: release.tag_name,
       // url: asset.browser_download_url,

@@ -40,7 +40,7 @@ export default async function handler(req, res) {
       version: release.tag_name,
       url: asset.browser_download_url,
       size: asset.size,
-      sha: null // GitHub REST API doesn't provide SHA by default
+      sha: asset.digest // GitHub REST API doesn't provide SHA by default
     });
   } catch (err) {
     console.error('API error:', err);

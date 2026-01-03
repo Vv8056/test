@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const secret = process.env.SECRET_API_KEY;
+  const secret = process.env.GITHUB_TOKEN;
 
   if (!secret) {
     return res.status(500).json({ error: "Server config error" });

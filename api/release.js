@@ -36,11 +36,12 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({
-      name: release.name || release.tag_name,
-      version: release.tag_name,
-      url: asset.browser_download_url,
-      size: asset.size,
-      sha: asset.digest // GitHub REST API doesn't provide SHA by default
+      release, asset 
+      // name: release.name || release.tag_name,
+      // version: release.tag_name,
+      // url: asset.browser_download_url,
+      // size: asset.size,
+      // sha: asset.digest // GitHub REST API doesn't provide SHA by default
     });
   } catch (err) {
     console.error('API error:', err);
